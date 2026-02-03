@@ -227,8 +227,8 @@ a!localVariables(
                 ),
 
                 /* Dati Prodotto Estratti */
-                a!showWhen(
-                  showWhen: local!scanCompleted,
+                if(
+                  local!scanCompleted,
                   a!boxLayout(
                     label: "Dati Prodotto Identificato",
                     style: "INFO",
@@ -296,7 +296,8 @@ a!localVariables(
                       )
                     },
                     marginAbove: "STANDARD"
-                  )
+                  ),
+                  {}
                 )
               },
               style: "STANDARD",
@@ -305,8 +306,8 @@ a!localVariables(
             ),
 
             /* ========== SEZIONE 2: VERIFICA AUTENTICITA' NMVS ========== */
-            a!showWhen(
-              showWhen: local!scanCompleted,
+            if(
+              local!scanCompleted,
               a!cardLayout(
                 contents: {
                   a!richTextDisplayField(
@@ -369,8 +370,8 @@ a!localVariables(
                       a!columnLayout(
                         contents: {
                           /* Stato Verifica NMVS */
-                          a!showWhen(
-                            showWhen: len(local!nmvsStatus) > 0,
+                          if(
+                            len(local!nmvsStatus) > 0,
                             {
                               a!stampField(
                                 labelPosition: "COLLAPSED",
@@ -404,7 +405,8 @@ a!localVariables(
                                 },
                                 marginAbove: "STANDARD"
                               )
-                            }
+                            },
+                            {}
                           )
                         }
                       )
@@ -415,12 +417,13 @@ a!localVariables(
                 style: "STANDARD",
                 padding: "STANDARD",
                 marginBelow: "STANDARD"
-              )
+              ),
+              {}
             ),
 
             /* ========== SEZIONE 3: CONTROLLO INTEGRITA' ATD ========== */
-            a!showWhen(
-              showWhen: and(local!scanCompleted, len(local!nmvsStatus) > 0),
+            if(
+              and(local!scanCompleted, len(local!nmvsStatus) > 0),
               a!cardLayout(
                 contents: {
                   a!richTextDisplayField(
@@ -486,8 +489,8 @@ a!localVariables(
                       a!columnLayout(
                         contents: {
                           /* Stato ATD */
-                          a!showWhen(
-                            showWhen: len(local!atdStatus) > 0,
+                          if(
+                            len(local!atdStatus) > 0,
                             {
                               a!stampField(
                                 labelPosition: "COLLAPSED",
@@ -521,7 +524,8 @@ a!localVariables(
                                 },
                                 marginAbove: "STANDARD"
                               )
-                            }
+                            },
+                            {}
                           )
                         },
                         width: "NARROW_PLUS"
@@ -532,12 +536,13 @@ a!localVariables(
                 style: "STANDARD",
                 padding: "STANDARD",
                 marginBelow: "STANDARD"
-              )
+              ),
+              {}
             ),
 
             /* ========== SEZIONE 4: DECOMMISSIONING UI ========== */
-            a!showWhen(
-              showWhen: and(
+            if(
+              and(
                 local!scanCompleted,
                 local!nmvsStatus = "AUTENTICO",
                 local!atdStatus = "INTEGRO"
@@ -633,8 +638,8 @@ a!localVariables(
                   ),
 
                   /* Conferma Decommissioning */
-                  a!showWhen(
-                    showWhen: local!decommissioningCompleted,
+                  if(
+                    local!decommissioningCompleted,
                     a!boxLayout(
                       label: "",
                       style: "SUCCESS",
@@ -698,18 +703,20 @@ a!localVariables(
                         )
                       },
                       marginAbove: "STANDARD"
-                    )
+                    ),
+                    {}
                   )
                 },
                 style: "STANDARD",
                 padding: "STANDARD",
                 marginBelow: "STANDARD"
-              )
+              ),
+              {}
             ),
 
             /* ========== ALERT IN CASO DI ANOMALIA ========== */
-            a!showWhen(
-              showWhen: or(
+            if(
+              or(
                 local!nmvsStatus = "SOSPETTO",
                 local!nmvsStatus = "ERRORE",
                 local!atdStatus = "MANOMESSO"
@@ -782,12 +789,13 @@ a!localVariables(
                 style: "ERROR",
                 padding: "STANDARD",
                 marginBelow: "STANDARD"
-              )
+              ),
+              {}
             ),
 
             /* ========== RIEPILOGO STATO VERIFICHE ========== */
-            a!showWhen(
-              showWhen: local!scanCompleted,
+            if(
+              local!scanCompleted,
               a!cardLayout(
                 contents: {
                   a!richTextDisplayField(
@@ -906,7 +914,8 @@ a!localVariables(
                 style: "STANDARD",
                 padding: "STANDARD",
                 marginBelow: "STANDARD"
-              )
+              ),
+              {}
             )
           }
         )
