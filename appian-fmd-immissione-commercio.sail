@@ -40,8 +40,7 @@ a!localVariables(
   /* Note e commenti */
   local!note: "",
 
-  {
-    a!headerContentLayout(
+  a!headerContentLayout(
       header: {
         a!cardLayout(
           contents: {
@@ -921,5 +920,4 @@ a!localVariables(
         )
       }
     )
-  }
 )
