@@ -162,7 +162,7 @@ a!localVariables(
                             a!buttonWidget(
                               label: "Scansiona",
                               icon: "barcode",
-                              style: "PRIMARY",
+                              style: "SOLID",
                               disabled: or(
                                 len(local!dataMatrixCode) = 0,
                                 local!scanCompleted
@@ -189,7 +189,7 @@ a!localVariables(
                             a!buttonWidget(
                               label: "Reset",
                               icon: "refresh",
-                              style: "SECONDARY",
+                              style: "OUTLINE",
                               saveInto: {
                                 a!save(local!dataMatrixCode, ""),
                                 a!save(local!scanCompleted, false),
@@ -346,7 +346,7 @@ a!localVariables(
                               a!buttonWidget(
                                 label: "Verifica NMVS",
                                 icon: "search",
-                                style: "PRIMARY",
+                                style: "SOLID",
                                 disabled: or(
                                   local!verificationCompleted,
                                   local!verificationInProgress
@@ -621,7 +621,7 @@ a!localVariables(
                       a!buttonWidget(
                         label: "Esegui Decommissioning",
                         icon: "check",
-                        style: "PRIMARY",
+                        style: "SOLID",
                         disabled: local!decommissioningCompleted,
                         saveInto: {
                           a!save(local!decommissioningCompleted, true),
@@ -774,12 +774,12 @@ a!localVariables(
                       a!buttonWidget(
                         label: "Segnala Anomalia",
                         icon: "flag",
-                        style: "DESTRUCTIVE"
+                        style: "SOLID"
                       ),
                       a!buttonWidget(
                         label: "Stampa Report",
                         icon: "print",
-                        style: "SECONDARY"
+                        style: "OUTLINE"
                       )
                     },
                     align: "START",
