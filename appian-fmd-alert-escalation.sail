@@ -246,7 +246,7 @@ a!localVariables(
                         text: "1",
                         size: "LARGE",
                         style: "STRONG",
-                        color: "WARNING"
+                        color: "#E67E22"
                       )
                     }
                   )
@@ -348,7 +348,7 @@ a!localVariables(
                       a!richTextItem(
                         text: "L3",
                         style: "STRONG",
-                        color: "WARNING"
+                        color: "#E67E22"
                       ),
                       " - ATD compromesso"
                     }
