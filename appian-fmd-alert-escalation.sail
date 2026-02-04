@@ -554,26 +554,31 @@ a!localVariables(
                     labelPosition: "COLLAPSED",
                     value: text(fv!item.dataOra, "dd/mm/yyyy")
                   ),
-                  a!stampField(
+                  a!richTextDisplayField(
                     labelPosition: "COLLAPSED",
-                    text: fv!item.livello,
-                    backgroundColor: if(
-                      fv!item.livello = "L5",
-                      "NEGATIVE",
-                      if(
-                        fv!item.livello = "L4",
-                        "NEGATIVE",
-                        if(
-                          fv!item.livello = "L3",
-                          "#E67E22",
+                    value: {
+                      a!richTextItem(
+                        text: " " & fv!item.livello & " ",
+                        style: "STRONG",
+                        color: if(
+                          fv!item.livello = "L5",
+                          "NEGATIVE",
                           if(
-                            fv!item.livello = "L2",
-                            "ACCENT",
-                            "SECONDARY"
+                            fv!item.livello = "L4",
+                            "NEGATIVE",
+                            if(
+                              fv!item.livello = "L3",
+                              "#E67E22",
+                              if(
+                                fv!item.livello = "L2",
+                                "ACCENT",
+                                "SECONDARY"
+                              )
+                            )
                           )
                         )
                       )
-                    )
+                    }
                   ),
                   a!richTextDisplayField(
                     labelPosition: "COLLAPSED",
@@ -583,22 +588,27 @@ a!localVariables(
                     labelPosition: "COLLAPSED",
                     value: fv!item.mah
                   ),
-                  a!stampField(
+                  a!richTextDisplayField(
                     labelPosition: "COLLAPSED",
-                    text: substitute(fv!item.stato, "_", " "),
-                    backgroundColor: if(
-                      fv!item.stato = "APERTO",
-                      "NEGATIVE",
-                      if(
-                        fv!item.stato = "IN_ANALISI",
-                        "#E67E22",
-                        if(
-                          fv!item.stato = "RISOLTO",
-                          "POSITIVE",
-                          "SECONDARY"
+                    value: {
+                      a!richTextItem(
+                        text: substitute(fv!item.stato, "_", " "),
+                        style: "STRONG",
+                        color: if(
+                          fv!item.stato = "APERTO",
+                          "NEGATIVE",
+                          if(
+                            fv!item.stato = "IN_ANALISI",
+                            "#E67E22",
+                            if(
+                              fv!item.stato = "RISOLTO",
+                              "POSITIVE",
+                              "SECONDARY"
+                            )
+                          )
                         )
                       )
-                    )
+                    }
                   ),
                   a!buttonArrayLayout(
                     buttons: {
