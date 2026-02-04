@@ -114,50 +114,92 @@ a!localVariables(
   a!sectionLayout(
     label: "",
     contents: {
-      /* ========== HEADER ========== */
-      a!cardLayout(
+      /* ========== HEADER PRINCIPALE ========== */
+      /* Barra superiore con logo e sistema */
+      a!boxLayout(
+        label: "",
+        style: "ACCENT",
         contents: {
           a!columnsLayout(
             columns: {
+              /* Logo e Branding */
+              a!columnLayout(
+                contents: {
+                  a!sideBySideLayout(
+                    items: {
+                      a!sideBySideItem(
+                        item: a!richTextDisplayField(
+                          labelPosition: "COLLAPSED",
+                          value: {
+                            a!richTextIcon(icon: "shield", size: "LARGE"),
+                            a!richTextIcon(icon: "medkit", size: "LARGE")
+                          }
+                        ),
+                        width: "MINIMIZE"
+                      ),
+                      a!sideBySideItem(
+                        item: {
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: "FMD COMPLIANCE",
+                                size: "MEDIUM",
+                                style: "STRONG"
+                              )
+                            }
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: "Falsified Medicines Directive 2011/62/EU",
+                                size: "SMALL"
+                              )
+                            }
+                          )
+                        }
+                      )
+                    },
+                    alignVertical: "MIDDLE"
+                  )
+                },
+                width: "NARROW_PLUS"
+              ),
+              /* Titolo Centrale */
               a!columnLayout(
                 contents: {
                   a!richTextDisplayField(
                     labelPosition: "COLLAPSED",
                     value: {
-                      a!richTextIcon(
-                        icon: "exclamation-circle",
-                        size: "LARGE",
-                        color: "NEGATIVE"
-                      ),
-                      " ",
                       a!richTextItem(
-                        text: "GESTIONE ALERT L5 - SOSPETTA CONTRAFFAZIONE",
+                        text: "ALERT MANAGEMENT SYSTEM",
                         size: "LARGE",
                         style: "STRONG"
                       )
-                    }
+                    },
+                    align: "CENTER"
                   ),
                   a!richTextDisplayField(
                     labelPosition: "COLLAPSED",
                     value: {
                       a!richTextItem(
-                        text: "MAH - Monitoraggio Case Alert Critici",
-                        size: "MEDIUM",
-                        color: "SECONDARY"
+                        text: "Marketing Authorization Holder Portal",
+                        size: "SMALL"
                       )
-                    }
+                    },
+                    align: "CENTER"
                   )
                 }
               ),
+              /* Info Utente e Sistema */
               a!columnLayout(
                 contents: {
                   a!richTextDisplayField(
                     labelPosition: "COLLAPSED",
                     value: {
-                      a!richTextItem(
-                        text: "Operatore: ",
-                        color: "SECONDARY"
-                      ),
+                      a!richTextIcon(icon: "user-circle", size: "MEDIUM"),
+                      " ",
                       a!richTextItem(
                         text: loggedInUser(),
                         style: "STRONG"
@@ -168,21 +210,98 @@ a!localVariables(
                   a!richTextDisplayField(
                     labelPosition: "COLLAPSED",
                     value: {
+                      a!richTextIcon(icon: "clock-o"),
+                      " ",
                       a!richTextItem(
-                        text: text(now(), "dd/mm/yyyy HH:mm"),
-                        color: "SECONDARY"
+                        text: text(now(), "dd/mm/yyyy HH:mm")
                       )
                     },
                     align: "RIGHT"
                   )
                 },
-                width: "NARROW"
+                width: "NARROW_PLUS"
               )
-            }
+            },
+            alignVertical: "MIDDLE"
           )
         },
-        style: "ACCENT",
-        padding: "STANDARD",
+        marginBelow: "NONE"
+      ),
+
+      /* Barra Alert L5 - Critico */
+      a!boxLayout(
+        label: "",
+        style: "ERROR",
+        contents: {
+          a!columnsLayout(
+            columns: {
+              a!columnLayout(
+                contents: {
+                  a!sideBySideLayout(
+                    items: {
+                      a!sideBySideItem(
+                        item: a!richTextDisplayField(
+                          labelPosition: "COLLAPSED",
+                          value: {
+                            a!richTextIcon(icon: "exclamation-triangle", size: "MEDIUM"),
+                            " ",
+                            a!richTextItem(
+                              text: "LIVELLO 5 - SOSPETTA CONTRAFFAZIONE",
+                              size: "MEDIUM",
+                              style: "STRONG"
+                            )
+                          }
+                        )
+                      ),
+                      a!sideBySideItem(
+                        item: a!richTextDisplayField(
+                          labelPosition: "COLLAPSED",
+                          value: {
+                            a!richTextItem(
+                              text: " | ",
+                              color: "SECONDARY"
+                            ),
+                            a!richTextItem(
+                              text: "Gestione Case Alert Critici",
+                              style: "EMPHASIS"
+                            )
+                          }
+                        ),
+                        width: "MINIMIZE"
+                      )
+                    },
+                    alignVertical: "MIDDLE"
+                  )
+                }
+              ),
+              a!columnLayout(
+                contents: {
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: {
+                      a!richTextIcon(icon: "circle", color: "POSITIVE"),
+                      " ",
+                      a!richTextItem(
+                        text: "Sistema Operativo",
+                        size: "SMALL"
+                      ),
+                      "  |  ",
+                      a!richTextIcon(icon: "database"),
+                      " ",
+                      a!richTextItem(
+                        text: "NMVS Connected",
+                        size: "SMALL"
+                      )
+                    },
+                    align: "RIGHT"
+                  )
+                },
+                width: "NARROW_PLUS"
+              )
+            },
+            alignVertical: "MIDDLE"
+          )
+        },
         marginBelow: "STANDARD"
       ),
 
