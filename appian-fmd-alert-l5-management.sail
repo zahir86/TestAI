@@ -659,30 +659,147 @@ a!localVariables(
             local!mostraReportPDF,
             a!cardLayout(
               contents: {
-                /* Header Report */
-                a!richTextDisplayField(
-                  labelPosition: "COLLAPSED",
-                  value: {
-                    a!richTextIcon(icon: "file-pdf-o", size: "LARGE", color: "NEGATIVE"),
-                    " ",
-                    a!richTextItem(text: "ANTEPRIMA REPORT - ROOT CAUSE ANALYSIS (RCA)", size: "LARGE", style: "STRONG")
+                /* ===== BANNER HEADER REPORT ===== */
+                a!boxLayout(
+                  label: "",
+                  style: "ACCENT",
+                  contents: {
+                    a!columnsLayout(
+                      columns: {
+                        /* Logo e Nome Sistema */
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextIcon(icon: "shield", size: "LARGE"),
+                                " ",
+                                a!richTextIcon(icon: "medkit", size: "LARGE")
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: "FMD ALERT SYSTEM",
+                                  size: "MEDIUM",
+                                  style: "STRONG"
+                                )
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: "Falsified Medicines Directive",
+                                  size: "SMALL"
+                                )
+                              }
+                            )
+                          },
+                          width: "NARROW"
+                        ),
+                        /* Titolo Centrale */
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: "ROOT CAUSE ANALYSIS",
+                                  size: "LARGE",
+                                  style: "STRONG"
+                                )
+                              },
+                              align: "CENTER"
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: "REPORT INVESTIGAZIONE ALERT L5",
+                                  size: "MEDIUM",
+                                  style: "STRONG"
+                                )
+                              },
+                              align: "CENTER"
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(
+                                  text: "Sospetta Contraffazione Farmaco",
+                                  size: "SMALL"
+                                )
+                              },
+                              align: "CENTER"
+                            )
+                          }
+                        ),
+                        /* Info Documento */
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Doc. N°: ", style: "STRONG"),
+                                a!richTextItem(text: "RCA-" & local!caseSelezionato.idCase)
+                              },
+                              align: "RIGHT"
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Rev.: ", style: "STRONG"),
+                                a!richTextItem(text: "1.0")
+                              },
+                              align: "RIGHT"
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Data: ", style: "STRONG"),
+                                a!richTextItem(text: text(today(), "dd/mm/yyyy"))
+                              },
+                              align: "RIGHT"
+                            )
+                          },
+                          width: "NARROW"
+                        )
+                      },
+                      alignVertical: "MIDDLE"
+                    )
                   },
-                  align: "CENTER"
-                ),
-                a!richTextDisplayField(
-                  labelPosition: "COLLAPSED",
-                  value: {
-                    a!richTextItem(text: "Report Investigazione Alert L5 - Sospetta Contraffazione", color: "SECONDARY")
-                  },
-                  align: "CENTER",
-                  marginBelow: "STANDARD"
+                  marginBelow: "NONE"
                 ),
 
-                /* Linea separatore */
-                a!richTextDisplayField(
-                  labelPosition: "COLLAPSED",
-                  value: "________________________________________________________________________________________________________",
-                  align: "CENTER"
+                /* Barra Classificazione */
+                a!boxLayout(
+                  label: "",
+                  style: "ERROR",
+                  contents: {
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextIcon(icon: "exclamation-triangle"),
+                                " ",
+                                a!richTextItem(
+                                  text: "DOCUMENTO RISERVATO - ALERT LIVELLO 5 CRITICO",
+                                  style: "STRONG"
+                                )
+                              },
+                              align: "CENTER"
+                            )
+                          }
+                        )
+                      }
+                    )
+                  },
+                  marginBelow: "STANDARD"
                 ),
 
                 /* Sezione 1: Intestazione */
