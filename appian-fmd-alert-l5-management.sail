@@ -108,6 +108,9 @@ a!localVariables(
   local!conclusione: "",
   local!azioniCorrettive: "",
 
+  /* ===== VISUALIZZAZIONE PDF ===== */
+  local!mostraReportPDF: false,
+
   a!sectionLayout(
     label: "",
     contents: {
@@ -629,7 +632,8 @@ a!localVariables(
                   a!buttonWidget(
                     label: "Genera Report PDF",
                     icon: "file-pdf-o",
-                    style: "OUTLINE"
+                    style: "OUTLINE",
+                    saveInto: a!save(local!mostraReportPDF, true)
                   ),
                   a!buttonWidget(
                     label: "Chiudi Case",
@@ -648,6 +652,450 @@ a!localVariables(
             style: "STANDARD",
             padding: "STANDARD",
             marginBelow: "STANDARD"
+          ),
+
+          /* ========== ANTEPRIMA REPORT PDF ========== */
+          if(
+            local!mostraReportPDF,
+            a!cardLayout(
+              contents: {
+                /* Header Report */
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextIcon(icon: "file-pdf-o", size: "LARGE", color: "NEGATIVE"),
+                    " ",
+                    a!richTextItem(text: "ANTEPRIMA REPORT - ROOT CAUSE ANALYSIS (RCA)", size: "LARGE", style: "STRONG")
+                  },
+                  align: "CENTER"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(text: "Report Investigazione Alert L5 - Sospetta Contraffazione", color: "SECONDARY")
+                  },
+                  align: "CENTER",
+                  marginBelow: "STANDARD"
+                ),
+
+                /* Linea separatore */
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: "________________________________________________________________________________________________________",
+                  align: "CENTER"
+                ),
+
+                /* Sezione 1: Intestazione */
+                a!boxLayout(
+                  label: "1. INTESTAZIONE CASE",
+                  style: "STANDARD",
+                  contents: {
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "ID CASE: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.idCase)
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "ID ALERT: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.idAlert)
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Origine Alert: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.origineAlert)
+                              }
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Data Apertura: ", style: "STRONG"),
+                                a!richTextItem(text: text(local!caseSelezionato.dataGenerazione, "dd/mm/yyyy"))
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Data Chiusura: ", style: "STRONG"),
+                                a!richTextItem(text: text(today(), "dd/mm/yyyy"))
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Alert Manager: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.caseManager)
+                              }
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Stato Risoluzione: ", style: "STRONG"),
+                                a!richTextItem(
+                                  text: if(len(local!conclusione) > 0, substitute(local!conclusione, "_", " "), "In corso"),
+                                  color: if(len(local!conclusione) > 0, "POSITIVE", "#E67E22")
+                                )
+                              }
+                            )
+                          }
+                        )
+                      }
+                    )
+                  },
+                  marginAbove: "STANDARD"
+                ),
+
+                /* Sezione 2: Dati Prodotto */
+                a!boxLayout(
+                  label: "2. DATI PRODOTTO",
+                  style: "STANDARD",
+                  contents: {
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Nome Prodotto: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.prodotto)
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Codice GTIN: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.gtin)
+                              }
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Numero Seriale: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.seriale)
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Lotto: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.lotto)
+                              }
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Data Scadenza: ", style: "STRONG"),
+                                a!richTextItem(text: text(local!caseSelezionato.dataScadenza, "dd/mm/yyyy"))
+                              }
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "MAH: ", style: "STRONG"),
+                                a!richTextItem(text: local!caseSelezionato.mah)
+                              }
+                            )
+                          }
+                        )
+                      }
+                    )
+                  },
+                  marginAbove: "STANDARD"
+                ),
+
+                /* Sezione 3: Valutazione Rischio */
+                a!boxLayout(
+                  label: "3. VALUTAZIONE RISCHIO",
+                  style: "ERROR",
+                  contents: {
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Livello Rischio Iniziale: ", style: "STRONG"),
+                                a!richTextItem(
+                                  text: substitute(local!caseSelezionato.livelloRischio, "_", " "),
+                                  color: "NEGATIVE",
+                                  style: "STRONG"
+                                )
+                              }
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Probabilità Contraffazione: ", style: "STRONG"),
+                                a!richTextItem(
+                                  text: local!caseSelezionato.probabilitaContraffazione & "%",
+                                  color: "NEGATIVE",
+                                  style: "STRONG"
+                                )
+                              }
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Livello Finale: ", style: "STRONG"),
+                                a!richTextItem(
+                                  text: if(
+                                    or(local!conclusione = "FALSO_POSITIVO_SISTEMA", local!conclusione = "FALSO_POSITIVO_OPERATORE"),
+                                    "BASSO (Falso Positivo)",
+                                    if(local!conclusione = "CONTRAFFAZIONE_CONFERMATA", "CRITICO", "In valutazione")
+                                  ),
+                                  color: if(
+                                    or(local!conclusione = "FALSO_POSITIVO_SISTEMA", local!conclusione = "FALSO_POSITIVO_OPERATORE"),
+                                    "POSITIVE",
+                                    "NEGATIVE"
+                                  )
+                                )
+                              }
+                            )
+                          }
+                        )
+                      }
+                    )
+                  },
+                  marginAbove: "STANDARD"
+                ),
+
+                /* Sezione 4: Analisi Sviluppata */
+                a!boxLayout(
+                  label: "4. ANALISI SVILUPPATA",
+                  style: "STANDARD",
+                  contents: {
+                    a!richTextDisplayField(
+                      labelPosition: "COLLAPSED",
+                      value: {
+                        a!richTextItem(text: "Descrizione Alert: ", style: "STRONG"),
+                        a!richTextItem(text: "UI non presente nel database NMVS - Sospetta contraffazione farmaco")
+                      }
+                    ),
+                    a!richTextDisplayField(
+                      labelPosition: "COLLAPSED",
+                      value: {
+                        a!richTextItem(text: "Analisi Effettuata: ", style: "STRONG"),
+                        a!richTextItem(text: if(len(local!noteInvestigazione) > 0, local!noteInvestigazione, "Verifica della supply chain, controllo documentazione, analisi batch records, confronto con database produzione."))
+                      },
+                      marginAbove: "STANDARD"
+                    ),
+                    a!richTextDisplayField(
+                      labelPosition: "COLLAPSED",
+                      value: {
+                        a!richTextItem(text: "Fonti Consultate: ", style: "STRONG"),
+                        a!richTextItem(text: "NMVS, Database produzione MAH, Documentazione lotto, Certificati di analisi")
+                      },
+                      marginAbove: "STANDARD"
+                    ),
+                    a!richTextDisplayField(
+                      labelPosition: "COLLAPSED",
+                      value: {
+                        a!richTextItem(text: "Anomalie Riscontrate: ", style: "STRONG"),
+                        a!richTextItem(text: "Seriale non corrispondente ai records di produzione")
+                      },
+                      marginAbove: "STANDARD"
+                    )
+                  },
+                  marginAbove: "STANDARD"
+                ),
+
+                /* Sezione 5: Storico Attività */
+                a!boxLayout(
+                  label: "5. STORICO ATTIVITÀ E DECISIONI",
+                  style: "STANDARD",
+                  contents: {
+                    a!gridLayout(
+                      label: "",
+                      labelPosition: "COLLAPSED",
+                      headerCells: {
+                        a!gridLayoutHeaderCell(label: "Data/Ora"),
+                        a!gridLayoutHeaderCell(label: "Utente"),
+                        a!gridLayoutHeaderCell(label: "Azione"),
+                        a!gridLayoutHeaderCell(label: "Note")
+                      },
+                      rows: a!forEach(
+                        items: local!storicoAttivita,
+                        expression: a!gridRowLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: text(fv!item.dataOra, "dd/mm/yyyy HH:mm")
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: fv!item.utente
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: fv!item.azione
+                            ),
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: "-"
+                            )
+                          }
+                        )
+                      )
+                    )
+                  },
+                  marginAbove: "STANDARD"
+                ),
+
+                /* Sezione 6: Decisione Finale */
+                a!boxLayout(
+                  label: "6. DECISIONE FINALE E CHIUSURA",
+                  style: "STANDARD",
+                  contents: {
+                    a!richTextDisplayField(
+                      labelPosition: "COLLAPSED",
+                      value: {
+                        a!richTextItem(text: "Conclusione: ", style: "STRONG"),
+                        a!richTextItem(
+                          text: if(len(local!conclusione) > 0, substitute(local!conclusione, "_", " "), "In attesa di decisione"),
+                          style: "STRONG"
+                        )
+                      }
+                    ),
+                    a!richTextDisplayField(
+                      labelPosition: "COLLAPSED",
+                      value: {
+                        a!richTextItem(text: "Azioni Correttive: ", style: "STRONG"),
+                        a!richTextItem(text: if(len(local!azioniCorrettive) > 0, local!azioniCorrettive, "Nessuna azione correttiva specificata"))
+                      },
+                      marginAbove: "STANDARD"
+                    ),
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Firma Alert Manager: ", style: "STRONG"),
+                                a!richTextItem(text: "________________________")
+                              },
+                              marginAbove: "STANDARD"
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Data: ", style: "STRONG"),
+                                a!richTextItem(text: text(today(), "dd/mm/yyyy"))
+                              },
+                              marginAbove: "STANDARD"
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!richTextDisplayField(
+                              labelPosition: "COLLAPSED",
+                              value: {
+                                a!richTextItem(text: "Timbro: ", style: "STRONG"),
+                                a!richTextItem(text: "[_____]")
+                              },
+                              marginAbove: "STANDARD"
+                            )
+                          }
+                        )
+                      }
+                    )
+                  },
+                  marginAbove: "STANDARD"
+                ),
+
+                /* Footer Report */
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: "________________________________________________________________________________________________________",
+                  align: "CENTER",
+                  marginAbove: "STANDARD"
+                ),
+                a!richTextDisplayField(
+                  labelPosition: "COLLAPSED",
+                  value: {
+                    a!richTextItem(
+                      text: "Documento generato automaticamente dal Sistema di Gestione Alert FMD - " & text(now(), "dd/mm/yyyy HH:mm:ss"),
+                      size: "SMALL",
+                      color: "SECONDARY"
+                    )
+                  },
+                  align: "CENTER"
+                ),
+
+                /* Pulsanti azioni */
+                a!buttonArrayLayout(
+                  buttons: {
+                    a!buttonWidget(
+                      label: "Scarica PDF",
+                      icon: "download",
+                      style: "SOLID"
+                    ),
+                    a!buttonWidget(
+                      label: "Stampa",
+                      icon: "print",
+                      style: "OUTLINE"
+                    ),
+                    a!buttonWidget(
+                      label: "Invia via Email",
+                      icon: "envelope",
+                      style: "OUTLINE"
+                    ),
+                    a!buttonWidget(
+                      label: "Chiudi Anteprima",
+                      icon: "times",
+                      style: "OUTLINE",
+                      saveInto: a!save(local!mostraReportPDF, false)
+                    )
+                  },
+                  align: "CENTER",
+                  marginAbove: "STANDARD"
+                )
+              },
+              style: "STANDARD",
+              padding: "STANDARD",
+              marginBelow: "STANDARD"
+            ),
+            {}
           )
         },
 
