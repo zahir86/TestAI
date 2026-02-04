@@ -565,7 +565,7 @@ a!localVariables(
                         "NEGATIVE",
                         if(
                           fv!item.livello = "L3",
-                          "WARNING",
+                          "#E67E22",
                           if(
                             fv!item.livello = "L2",
                             "ACCENT",
@@ -591,7 +591,7 @@ a!localVariables(
                       "NEGATIVE",
                       if(
                         fv!item.stato = "IN_ANALISI",
-                        "WARNING",
+                        "#E67E22",
                         if(
                           fv!item.stato = "RISOLTO",
                           "POSITIVE",
@@ -759,7 +759,7 @@ a!localVariables(
                     value: {
                       a!richTextIcon(
                         icon: if(fv!item.stato = "completato", "check-circle", "clock-o"),
-                        color: if(fv!item.stato = "completato", "POSITIVE", "WARNING")
+                        color: if(fv!item.stato = "completato", "POSITIVE", "#E67E22")
                       ),
                       " ",
                       a!richTextItem(
