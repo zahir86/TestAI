@@ -125,20 +125,23 @@ a!localVariables(
               /* Logo e Branding */
               a!columnLayout(
                 contents: {
-                  a!sideBySideLayout(
-                    items: {
-                      a!sideBySideItem(
-                        item: a!richTextDisplayField(
-                          labelPosition: "COLLAPSED",
-                          value: {
-                            a!richTextIcon(icon: "shield", size: "LARGE"),
-                            a!richTextIcon(icon: "medkit", size: "LARGE")
-                          }
-                        ),
-                        width: "MINIMIZE"
+                  a!columnsLayout(
+                    columns: {
+                      a!columnLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextIcon(icon: "shield", size: "LARGE"),
+                              " ",
+                              a!richTextIcon(icon: "medkit", size: "LARGE")
+                            }
+                          )
+                        },
+                        width: "EXTRA_NARROW"
                       ),
-                      a!sideBySideItem(
-                        item: {
+                      a!columnLayout(
+                        contents: {
                           a!richTextDisplayField(
                             labelPosition: "COLLAPSED",
                             value: {
