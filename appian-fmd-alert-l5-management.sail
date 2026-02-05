@@ -103,6 +103,69 @@ a!localVariables(
     a!map(dataOra: now() - 0.1, azione: "Richiesta documentazione supply chain", utente: "Mario Rossi", tipo: "RICHIESTA")
   },
 
+  /* ===== ASSEGNAZIONE / RIASSEGNAZIONE ===== */
+  local!mostraFormAssegnazione: false,
+  local!modalitaAssegnazione: "ASSEGNA", /* ASSEGNA o RIASSEGNA */
+  local!nuovoCaseManager: null,
+  local!teamAssegnazione: null,
+  local!prioritaCase: null,
+  local!motivoRiassegnazione: null,
+  local!noteAssegnazione: "",
+  local!dataScadenzaAssegnazione: null,
+
+  /* Team disponibili */
+  local!teamDisponibili: {
+    a!map(id: "QA", nome: "Quality Assurance"),
+    a!map(id: "RA", nome: "Regulatory Affairs"),
+    a!map(id: "SC", nome: "Supply Chain Investigation"),
+    a!map(id: "SEC", nome: "Security & Anti-Counterfeiting"),
+    a!map(id: "LEG", nome: "Legal & Compliance")
+  },
+
+  /* Case Manager disponibili */
+  local!caseManagerDisponibili: {
+    a!map(id: 1, nome: "Mario Rossi", team: "QA", ruolo: "Senior QA Specialist", casiAttivi: 3),
+    a!map(id: 2, nome: "Laura Bianchi", team: "RA", ruolo: "Regulatory Manager", casiAttivi: 2),
+    a!map(id: 3, nome: "Giuseppe Verdi", team: "SEC", ruolo: "Anti-Counterfeiting Lead", casiAttivi: 5),
+    a!map(id: 4, nome: "Anna Neri", team: "SC", ruolo: "Supply Chain Analyst", casiAttivi: 1),
+    a!map(id: 5, nome: "Marco Gialli", team: "LEG", ruolo: "Legal Counsel", casiAttivi: 2),
+    a!map(id: 6, nome: "Sara Viola", team: "SEC", ruolo: "Fraud Investigator", casiAttivi: 4)
+  },
+
+  /* Storico Assegnazioni (per dettaglio) */
+  local!storicoAssegnazioni: {
+    a!map(
+      dataOra: now() - 2,
+      azione: "CREAZIONE",
+      daChi: "Sistema",
+      assegnatoPrecedente: "-",
+      assegnatoNuovo: "-",
+      team: "-",
+      motivo: "Case creato automaticamente",
+      priorita: "ALTA"
+    ),
+    a!map(
+      dataOra: now() - 1.5,
+      azione: "ASSEGNAZIONE",
+      daChi: "Admin",
+      assegnatoPrecedente: "-",
+      assegnatoNuovo: "Laura Bianchi",
+      team: "Regulatory Affairs",
+      motivo: "Prima assegnazione - competenza normativa",
+      priorita: "ALTA"
+    ),
+    a!map(
+      dataOra: now() - 0.8,
+      azione: "RIASSEGNAZIONE",
+      daChi: "Laura Bianchi",
+      assegnatoPrecedente: "Laura Bianchi",
+      assegnatoNuovo: "Mario Rossi",
+      team: "Quality Assurance",
+      motivo: "Necessaria analisi qualità approfondita",
+      priorita: "CRITICA"
+    )
+  },
+
   /* ===== DATI REPORT ===== */
   local!noteInvestigazione: "",
   local!conclusione: "",
@@ -542,62 +605,528 @@ a!localVariables(
             marginBelow: "STANDARD"
           ),
 
-          /* Sezione 4: Assegnazione Case Manager */
+          /* Sezione 4: Assegnazione e Riassegnazione Case Manager */
           a!cardLayout(
             contents: {
               a!richTextDisplayField(
                 labelPosition: "COLLAPSED",
                 value: {
-                  a!richTextIcon(icon: "user", color: "ACCENT"),
+                  a!richTextIcon(icon: "users", color: "ACCENT"),
                   " ",
-                  a!richTextItem(text: "ASSEGNAZIONE CASE MANAGER", style: "STRONG")
+                  a!richTextItem(text: "ASSEGNAZIONE E RIASSEGNAZIONE CASE MANAGER", style: "STRONG")
                 }
               ),
-              a!columnsLayout(
-                columns: {
-                  a!columnLayout(
-                    contents: {
-                      a!checkboxField(
-                        label: "Case Assegnato",
-                        labelPosition: "ABOVE",
-                        choiceLabels: {"Case Manager assegnato"},
-                        choiceValues: {true},
-                        value: if(local!caseSelezionato.caseManagerAssegnato, {true}, {}),
-                        disabled: true
-                      )
-                    },
-                    width: "NARROW"
-                  ),
-                  a!columnLayout(
-                    contents: {
-                      a!textField(
-                        label: "Case Manager",
-                        value: if(
-                          local!caseSelezionato.caseManagerAssegnato,
-                          local!caseSelezionato.caseManager,
-                          "Non assegnato"
-                        ),
-                        readOnly: true
-                      )
-                    }
-                  ),
-                  a!columnLayout(
-                    contents: {
-                      a!buttonArrayLayout(
-                        buttons: {
-                          a!buttonWidget(
-                            label: if(local!caseSelezionato.caseManagerAssegnato, "Riassegna", "Assegna"),
-                            icon: "user-plus",
-                            style: "SOLID"
+
+              /* --- Stato Attuale Assegnazione --- */
+              a!boxLayout(
+                label: "Stato Attuale",
+                style: if(local!caseSelezionato.caseManagerAssegnato, "STANDARD", "ERROR"),
+                contents: {
+                  a!columnsLayout(
+                    columns: {
+                      a!columnLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextIcon(
+                                icon: if(local!caseSelezionato.caseManagerAssegnato, "user-circle", "user-times"),
+                                size: "LARGE",
+                                color: if(local!caseSelezionato.caseManagerAssegnato, "POSITIVE", "NEGATIVE")
+                              )
+                            },
+                            align: "CENTER"
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: if(local!caseSelezionato.caseManagerAssegnato, "ASSEGNATO", "NON ASSEGNATO"),
+                                size: "MEDIUM",
+                                style: "STRONG",
+                                color: if(local!caseSelezionato.caseManagerAssegnato, "POSITIVE", "NEGATIVE")
+                              )
+                            },
+                            align: "CENTER"
                           )
                         },
-                        align: "END"
+                        width: "NARROW"
+                      ),
+                      a!columnLayout(
+                        contents: {
+                          a!textField(
+                            label: "Case Manager Attuale",
+                            value: if(
+                              local!caseSelezionato.caseManagerAssegnato,
+                              local!caseSelezionato.caseManager,
+                              "Nessun case manager assegnato"
+                            ),
+                            readOnly: true
+                          ),
+                          a!textField(
+                            label: "Team",
+                            value: if(
+                              local!caseSelezionato.caseManagerAssegnato,
+                              "Quality Assurance",
+                              "-"
+                            ),
+                            readOnly: true
+                          )
+                        }
+                      ),
+                      a!columnLayout(
+                        contents: {
+                          a!textField(
+                            label: "Priorità Case",
+                            value: "CRITICA",
+                            readOnly: true
+                          ),
+                          a!textField(
+                            label: "N° Riassegnazioni",
+                            value: "1",
+                            readOnly: true
+                          )
+                        }
+                      ),
+                      a!columnLayout(
+                        contents: {
+                          a!buttonArrayLayout(
+                            buttons: {
+                              a!buttonWidget(
+                                label: if(local!caseSelezionato.caseManagerAssegnato, "Riassegna Case", "Assegna Case"),
+                                icon: if(local!caseSelezionato.caseManagerAssegnato, "exchange", "user-plus"),
+                                style: "SOLID",
+                                saveInto: {
+                                  a!save(local!mostraFormAssegnazione, true),
+                                  a!save(
+                                    local!modalitaAssegnazione,
+                                    if(local!caseSelezionato.caseManagerAssegnato, "RIASSEGNA", "ASSEGNA")
+                                  )
+                                }
+                              ),
+                              if(
+                                local!caseSelezionato.caseManagerAssegnato,
+                                a!buttonWidget(
+                                  label: "Rimuovi Assegnazione",
+                                  icon: "user-times",
+                                  style: "OUTLINE",
+                                  confirmHeader: "Conferma Rimozione",
+                                  confirmMessage: "Sei sicuro di voler rimuovere l'assegnazione corrente? Il case resterà non assegnato.",
+                                  confirmButtonLabel: "Conferma",
+                                  cancelButtonLabel: "Annulla"
+                                ),
+                                {}
+                              )
+                            },
+                            align: "END"
+                          )
+                        },
+                        width: "NARROW_PLUS"
                       )
                     },
-                    width: "NARROW"
+                    alignVertical: "MIDDLE"
                   )
                 },
-                alignVertical: "MIDDLE"
+                marginAbove: "STANDARD"
+              ),
+
+              /* --- Form Assegnazione / Riassegnazione (condizionale) --- */
+              if(
+                local!mostraFormAssegnazione,
+                a!boxLayout(
+                  label: if(local!modalitaAssegnazione = "ASSEGNA", "Nuova Assegnazione", "Riassegnazione Case"),
+                  style: "ACCENT",
+                  contents: {
+                    /* Intestazione Form */
+                    a!richTextDisplayField(
+                      labelPosition: "COLLAPSED",
+                      value: {
+                        a!richTextIcon(
+                          icon: if(local!modalitaAssegnazione = "ASSEGNA", "user-plus", "exchange"),
+                          color: "ACCENT"
+                        ),
+                        " ",
+                        a!richTextItem(
+                          text: if(
+                            local!modalitaAssegnazione = "ASSEGNA",
+                            "Compilare i campi per assegnare un Case Manager",
+                            "Compilare i campi per riassegnare il Case ad un nuovo Manager"
+                          ),
+                          color: "SECONDARY"
+                        )
+                      },
+                      marginBelow: "STANDARD"
+                    ),
+
+                    /* Motivo riassegnazione (solo per RIASSEGNA) */
+                    if(
+                      local!modalitaAssegnazione = "RIASSEGNA",
+                      {
+                        a!dropdownField(
+                          label: "Motivo Riassegnazione *",
+                          labelPosition: "ABOVE",
+                          placeholder: "Seleziona motivo...",
+                          choiceLabels: {
+                            "Carico di lavoro eccessivo",
+                            "Competenza specifica richiesta",
+                            "Conflitto di interesse",
+                            "Assenza/Indisponibilità",
+                            "Escalation a team specializzato",
+                            "Richiesta del Case Manager",
+                            "Decisione del supervisore",
+                            "Altro"
+                          },
+                          choiceValues: {
+                            "CARICO_LAVORO",
+                            "COMPETENZA",
+                            "CONFLITTO_INTERESSE",
+                            "ASSENZA",
+                            "ESCALATION",
+                            "RICHIESTA_CM",
+                            "DECISIONE_SUPERVISORE",
+                            "ALTRO"
+                          },
+                          value: local!motivoRiassegnazione,
+                          saveInto: local!motivoRiassegnazione,
+                          required: true
+                        )
+                      },
+                      {}
+                    ),
+
+                    /* Selezione Team e Case Manager */
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!dropdownField(
+                              label: "Team di Competenza *",
+                              labelPosition: "ABOVE",
+                              placeholder: "Seleziona team...",
+                              choiceLabels: {
+                                "Quality Assurance",
+                                "Regulatory Affairs",
+                                "Supply Chain Investigation",
+                                "Security & Anti-Counterfeiting",
+                                "Legal & Compliance"
+                              },
+                              choiceValues: {"QA", "RA", "SC", "SEC", "LEG"},
+                              value: local!teamAssegnazione,
+                              saveInto: {
+                                local!teamAssegnazione,
+                                a!save(local!nuovoCaseManager, null)
+                              },
+                              required: true
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!dropdownField(
+                              label: "Nuovo Case Manager *",
+                              labelPosition: "ABOVE",
+                              placeholder: if(
+                                isnull(local!teamAssegnazione),
+                                "Seleziona prima il team...",
+                                "Seleziona case manager..."
+                              ),
+                              choiceLabels: a!forEach(
+                                items: local!caseManagerDisponibili,
+                                expression: fv!item.nome & " (" & fv!item.ruolo & ") - " & fv!item.casiAttivi & " casi attivi"
+                              ),
+                              choiceValues: a!forEach(
+                                items: local!caseManagerDisponibili,
+                                expression: fv!item.id
+                              ),
+                              value: local!nuovoCaseManager,
+                              saveInto: local!nuovoCaseManager,
+                              required: true,
+                              disabled: isnull(local!teamAssegnazione)
+                            )
+                          }
+                        )
+                      }
+                    ),
+
+                    /* Priorità e Scadenza */
+                    a!columnsLayout(
+                      columns: {
+                        a!columnLayout(
+                          contents: {
+                            a!dropdownField(
+                              label: "Priorità *",
+                              labelPosition: "ABOVE",
+                              placeholder: "Seleziona priorità...",
+                              choiceLabels: {
+                                "Critica - Entro 4 ore",
+                                "Alta - Entro 24 ore",
+                                "Media - Entro 48 ore",
+                                "Bassa - Entro 7 giorni"
+                              },
+                              choiceValues: {"CRITICA", "ALTA", "MEDIA", "BASSA"},
+                              value: local!prioritaCase,
+                              saveInto: local!prioritaCase,
+                              required: true
+                            )
+                          }
+                        ),
+                        a!columnLayout(
+                          contents: {
+                            a!dateField(
+                              label: "Data Scadenza Investigazione",
+                              labelPosition: "ABOVE",
+                              value: local!dataScadenzaAssegnazione,
+                              saveInto: local!dataScadenzaAssegnazione
+                            )
+                          }
+                        )
+                      }
+                    ),
+
+                    /* Note Assegnazione */
+                    a!paragraphField(
+                      label: "Note Assegnazione",
+                      labelPosition: "ABOVE",
+                      placeholder: if(
+                        local!modalitaAssegnazione = "ASSEGNA",
+                        "Inserire eventuali note o istruzioni per il Case Manager...",
+                        "Inserire note sulla riassegnazione e indicazioni per il nuovo Case Manager..."
+                      ),
+                      value: local!noteAssegnazione,
+                      saveInto: local!noteAssegnazione,
+                      height: "SHORT"
+                    ),
+
+                    /* Info riepilogo (solo per RIASSEGNA) */
+                    if(
+                      local!modalitaAssegnazione = "RIASSEGNA",
+                      a!boxLayout(
+                        label: "",
+                        style: "STANDARD",
+                        contents: {
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextIcon(icon: "info-circle", color: "ACCENT"),
+                              " ",
+                              a!richTextItem(
+                                text: "Riepilogo Riassegnazione: ",
+                                style: "STRONG"
+                              ),
+                              a!richTextItem(
+                                text: "Da: " & local!caseSelezionato.caseManager & " → A: ",
+                                color: "SECONDARY"
+                              ),
+                              a!richTextItem(
+                                text: if(
+                                  isnull(local!nuovoCaseManager),
+                                  "(selezionare nuovo manager)",
+                                  index(
+                                    a!forEach(
+                                      items: local!caseManagerDisponibili,
+                                      expression: if(fv!item.id = local!nuovoCaseManager, fv!item.nome, null)
+                                    ),
+                                    wherecontains(
+                                      local!nuovoCaseManager,
+                                      a!forEach(items: local!caseManagerDisponibili, expression: fv!item.id)
+                                    ),
+                                    "(selezionare)"
+                                  )
+                                ),
+                                style: "STRONG",
+                                color: "ACCENT"
+                              )
+                            }
+                          )
+                        }
+                      ),
+                      {}
+                    ),
+
+                    /* Pulsanti Form */
+                    a!buttonArrayLayout(
+                      buttons: {
+                        a!buttonWidget(
+                          label: if(local!modalitaAssegnazione = "ASSEGNA", "Conferma Assegnazione", "Conferma Riassegnazione"),
+                          icon: "check",
+                          style: "SOLID",
+                          disabled: or(
+                            isnull(local!nuovoCaseManager),
+                            isnull(local!teamAssegnazione),
+                            isnull(local!prioritaCase),
+                            if(local!modalitaAssegnazione = "RIASSEGNA", isnull(local!motivoRiassegnazione), false)
+                          ),
+                          confirmHeader: if(
+                            local!modalitaAssegnazione = "ASSEGNA",
+                            "Conferma Assegnazione",
+                            "Conferma Riassegnazione"
+                          ),
+                          confirmMessage: if(
+                            local!modalitaAssegnazione = "ASSEGNA",
+                            "Procedere con l'assegnazione del Case Manager selezionato?",
+                            "Procedere con la riassegnazione? Il Case Manager precedente verrà notificato."
+                          ),
+                          confirmButtonLabel: "Conferma",
+                          cancelButtonLabel: "Annulla",
+                          saveInto: {
+                            a!save(local!mostraFormAssegnazione, false),
+                            a!save(local!nuovoCaseManager, null),
+                            a!save(local!teamAssegnazione, null),
+                            a!save(local!prioritaCase, null),
+                            a!save(local!motivoRiassegnazione, null),
+                            a!save(local!noteAssegnazione, ""),
+                            a!save(local!dataScadenzaAssegnazione, null)
+                          }
+                        ),
+                        a!buttonWidget(
+                          label: "Annulla",
+                          icon: "times",
+                          style: "OUTLINE",
+                          saveInto: {
+                            a!save(local!mostraFormAssegnazione, false),
+                            a!save(local!nuovoCaseManager, null),
+                            a!save(local!teamAssegnazione, null),
+                            a!save(local!prioritaCase, null),
+                            a!save(local!motivoRiassegnazione, null),
+                            a!save(local!noteAssegnazione, ""),
+                            a!save(local!dataScadenzaAssegnazione, null)
+                          }
+                        )
+                      },
+                      align: "END",
+                      marginAbove: "STANDARD"
+                    )
+                  },
+                  marginAbove: "STANDARD"
+                ),
+                {}
+              ),
+
+              /* --- Storico Assegnazioni --- */
+              a!boxLayout(
+                label: "Storico Assegnazioni",
+                style: "STANDARD",
+                contents: {
+                  a!richTextDisplayField(
+                    labelPosition: "COLLAPSED",
+                    value: {
+                      a!richTextIcon(icon: "history", color: "ACCENT"),
+                      " ",
+                      a!richTextItem(
+                        text: "Cronologia completa delle assegnazioni e riassegnazioni",
+                        color: "SECONDARY",
+                        size: "SMALL"
+                      )
+                    },
+                    marginBelow: "STANDARD"
+                  ),
+                  a!gridLayout(
+                    label: "",
+                    labelPosition: "COLLAPSED",
+                    headerCells: {
+                      a!gridLayoutHeaderCell(label: "Data/Ora"),
+                      a!gridLayoutHeaderCell(label: "Azione"),
+                      a!gridLayoutHeaderCell(label: "Da"),
+                      a!gridLayoutHeaderCell(label: "A"),
+                      a!gridLayoutHeaderCell(label: "Team"),
+                      a!gridLayoutHeaderCell(label: "Motivo"),
+                      a!gridLayoutHeaderCell(label: "Priorità")
+                    },
+                    rows: a!forEach(
+                      items: local!storicoAssegnazioni,
+                      expression: a!gridRowLayout(
+                        contents: {
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: text(fv!item.dataOra, "dd/mm/yyyy HH:mm"),
+                                size: "SMALL"
+                              )
+                            }
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextIcon(
+                                icon: if(
+                                  fv!item.azione = "CREAZIONE", "plus-circle",
+                                  if(fv!item.azione = "ASSEGNAZIONE", "user-plus", "exchange")
+                                ),
+                                color: if(
+                                  fv!item.azione = "CREAZIONE", "SECONDARY",
+                                  if(fv!item.azione = "ASSEGNAZIONE", "POSITIVE", "ACCENT")
+                                )
+                              ),
+                              " ",
+                              a!richTextItem(
+                                text: fv!item.azione,
+                                style: "STRONG",
+                                size: "SMALL"
+                              )
+                            }
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: fv!item.assegnatoPrecedente,
+                                size: "SMALL",
+                                color: if(fv!item.assegnatoPrecedente = "-", "SECONDARY", "STANDARD")
+                              )
+                            }
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: fv!item.assegnatoNuovo,
+                                size: "SMALL",
+                                style: if(fv!item.assegnatoNuovo = "-", "PLAIN", "STRONG"),
+                                color: if(fv!item.assegnatoNuovo = "-", "SECONDARY", "ACCENT")
+                              )
+                            }
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: fv!item.team,
+                                size: "SMALL"
+                              )
+                            }
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: fv!item.motivo,
+                                size: "SMALL",
+                                color: "SECONDARY"
+                              )
+                            }
+                          ),
+                          a!richTextDisplayField(
+                            labelPosition: "COLLAPSED",
+                            value: {
+                              a!richTextItem(
+                                text: fv!item.priorita,
+                                size: "SMALL",
+                                style: "STRONG",
+                                color: if(
+                                  fv!item.priorita = "CRITICA", "NEGATIVE",
+                                  if(fv!item.priorita = "ALTA", "#E67E22", "ACCENT")
+                                )
+                              )
+                            }
+                          )
+                        }
+                      )
+                    ),
+                    selectionStyle: "ROW_HIGHLIGHT"
+                  )
+                },
+                marginAbove: "STANDARD"
               )
             },
             style: "STANDARD",
